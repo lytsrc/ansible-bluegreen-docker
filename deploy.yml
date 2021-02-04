@@ -1,0 +1,6 @@
+---
+
+- hosts: local
+  tasks:
+    - include_role:
+        name: deployer

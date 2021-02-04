@@ -2,7 +2,7 @@
 
 - name: store host facts
   blockinfile:
-    dest: /etc/ansible/facts.d/{{ app_name }}.fact
+    dest: .ansible/facts.d/{{ app_name }}.fact
     marker: "{mark}"
     marker_begin: '{'
     marker_end: '}'
@@ -22,3 +22,5 @@
     - not _app_first_run
     - app_version != _app_prev_version
     - app_old_containers_treatment_enabled
+  vars:
+    ansible_python_interpreter: ~/.pyenv/versions/2.7.18/bin/python

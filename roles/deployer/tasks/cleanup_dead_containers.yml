@@ -14,3 +14,5 @@
     state: absent
   loop: "{{ _app_dead_containers.stdout_lines }}"
   when: _app_dead_containers.stdout
+  vars:
+    ansible_python_interpreter: ~/.pyenv/versions/2.7.18/bin/python

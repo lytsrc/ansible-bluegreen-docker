@@ -1,16 +1,18 @@
 ---
 
 - name: check nginx configuration
+  become: true
   command: nginx -t -c /etc/nginx/nginx.conf
   register: _app_nginx_conf_check
   changed_when: "_app_nginx_conf_check.rc != 0"
 
 - name: reload nginx
+  become: true
   service:
     name: nginx
     state: reloaded
 
-- name: make test request to nginx
+- name: make test request to application
   uri:
     url: "{{ 'http://' + hostvars[inventory_hostname]['ansible_default_ipv4']['address'] + app_healthcheck_path }}"
     method: GET
@@ -21,6 +23,7 @@
     - app_healthcheck_enabled
 
 - name: cleanup nginx config backups
+  become: true
   command: /bin/true
   notify:
     - get list of nginx config backups
@@ -29,12 +32,14 @@
     - skip_ansible_lint
 
 - name: get list of nginx config backups
+  become: true
   find:
     paths: /etc/nginx/conf.d/
     patterns: "{{ app_name }}.conf.*"
   register: _app_nginx_config_backups
 
 - name: delete old nginx config backups
+  become: true
   file:
     path: "{{ item.path }}"
     state: absent

@@ -1,2 +1,4 @@
 *.orig
 *.retry
+.ansible
+.python-version

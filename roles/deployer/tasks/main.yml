@@ -2,12 +2,12 @@
 
 - name: ensure facts.d dir exists
   file:
-    path: /etc/ansible/facts.d
+    path: .ansible/facts.d
     state: directory
 
 - name: put dummy fact to local facts dir
   lineinfile:
-    dest: /etc/ansible/facts.d/dummy.fact
+    dest: .ansible/facts.d/dummy.fact
     line: '{ "fact": true }'
     regexp: '^{ "fact": true }'
     create: yes
@@ -30,6 +30,14 @@
   run_once: yes
   delegate_to: localhost
 
+- name: Display python version
+  command: python --version
+  register: python_version_output
+
+- name: Debug output python version
+  debug:
+    var: python_version_output.stdout_lines
+
 - name: deploy app
   docker_container:
     name: "{{ app_name }}{% if app_bluegreen_enabled %}_{{ _app_next_color }}{% endif %}_{{ item }}"
@@ -45,6 +53,8 @@
     volumes: "{{ app_volumes }}"
   loop: "{{ range(app_instances_count)|list }}"
   register: _app_deployment
+  vars:
+    ansible_python_interpreter: ~/.pyenv/versions/2.7.18/bin/python
 
 - name: detect app ports
   set_fact:
@@ -65,6 +75,7 @@
     - "{{ _app_ports }}"
 
 - name: generate nginx config for the application
+  become: true
   template:
     src: nginx.conf.j2
     dest: "/etc/nginx/conf.d/{{ app_name }}.conf"
@@ -74,7 +85,7 @@
   notify:
     - check nginx configuration
     - reload nginx
-    - make test request to nginx
+    - make test request to application
     - cleanup nginx config backups
 
 - name: flush handlers

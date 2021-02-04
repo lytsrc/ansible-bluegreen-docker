@@ -3,6 +3,7 @@
 - name: reread ansible_local facts
   setup:
     filter: ansible_local
+    fact_path: .ansible/facts.d
 
 - name: check if run for the first time
   set_fact:

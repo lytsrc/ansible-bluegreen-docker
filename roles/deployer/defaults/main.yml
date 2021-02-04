@@ -1,7 +1,7 @@
 ---
 
-app_name: trainingwheels
-app_image: "decayofmind/trainingwheels"
+app_name: simplepyflask
+app_image: "local/simplepyflask"
 app_port: 5000
 app_version: latest
 app_instances_count: 2
